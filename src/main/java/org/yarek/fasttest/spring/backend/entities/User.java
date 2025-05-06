@@ -2,6 +2,7 @@ package org.yarek.fasttest.spring.backend.entities;
 
 import jakarta.persistence.*;
 
+@Table(name = "users", schema = "public")
 @Entity
 public class User {
 
@@ -14,17 +15,15 @@ public class User {
 
     }
 
-    public User(final String username, final String password, final Role role) {}
+    public User(final String username, final String password, final Role role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
 
     @Id
-    @SequenceGenerator(
-            name = "user_id_seq",
-            sequenceName = "user_id_seq",
-            allocationSize = 1
-    )
     @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "user_id_seq"
+            strategy = GenerationType.IDENTITY
     )
     private Long id;
 
