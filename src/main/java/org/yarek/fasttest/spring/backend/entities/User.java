@@ -5,11 +5,16 @@ import jakarta.persistence.*;
 @Entity
 public class User {
 
+    public enum Role {
+        STUDENT,
+        TEACHER
+    }
+
     public User() {
 
     }
 
-    public User(final String username, final String password) {}
+    public User(final String username, final String password, final Role role) {}
 
     @Id
     @SequenceGenerator(
@@ -28,5 +33,8 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
+    private Role role;
 
 }
