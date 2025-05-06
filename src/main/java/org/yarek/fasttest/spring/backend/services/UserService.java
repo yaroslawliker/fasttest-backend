@@ -25,7 +25,9 @@ public class UserService {
 
         User user = new User(
                 signupRequest.getUsername(),
-                signupRequest.getPassword());
+                signupRequest.getPassword(),
+                signupRequest.getRole()
+        );
 
         userRepository.save(user);
     }
