@@ -49,7 +49,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.
                 csrf(AbstractHttpConfigurer::disable).
-                authorizeHttpRequests(auth -> auth.anyRequest().authenticated()).
+                authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/signup", "/token").permitAll()
+                        .anyRequest().authenticated()
+                ).
+
                 oauth2ResourceServer(oauth2 -> oauth2.
                         jwt(jwt -> jwt
                             .jwtAuthenticationConverter(jwtAuthenticationConverter())
