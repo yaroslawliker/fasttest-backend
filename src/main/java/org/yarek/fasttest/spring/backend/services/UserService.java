@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.yarek.fasttest.spring.backend.dto.SignupRequest;
 import org.yarek.fasttest.spring.backend.entities.User;
+import org.yarek.fasttest.spring.backend.exceptions.UserNotFoundException;
 import org.yarek.fasttest.spring.backend.exceptions.UsernameAlreadyExistsException;
 import org.yarek.fasttest.spring.backend.repositories.UserRepository;
 
@@ -30,5 +31,13 @@ public class UserService {
         );
 
         userRepository.save(user);
+    }
+
+    public User getByUsername(String username) throws UserNotFoundException {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UserNotFoundException(username);
+        }
+        return user;
     }
 }
