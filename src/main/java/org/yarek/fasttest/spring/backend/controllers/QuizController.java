@@ -90,7 +90,9 @@ public class QuizController {
             @PathVariable Long quizId,
             @AuthenticationPrincipal Jwt jwt
     ) {
-        Long userId = Long.parseLong(jwt.getSubject());
+        String username = jwt.getSubject();
+        User user = userService.getByUsername(username);
+        Long userId = user.getId();
         return ResponseEntity.ok(quizService.startQuiz(quizId, userId));
     }
 
@@ -100,7 +102,9 @@ public class QuizController {
             @RequestParam float score,
             @AuthenticationPrincipal Jwt jwt
     ) {
-        Long userId = Long.parseLong(jwt.getSubject());
+        String username = jwt.getSubject();
+        User user = userService.getByUsername(username);
+        Long userId = user.getId();
         return ResponseEntity.ok(quizService.finishQuiz(quizId, userId, score));
     }
 
