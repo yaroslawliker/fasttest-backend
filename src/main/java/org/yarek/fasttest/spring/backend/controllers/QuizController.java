@@ -96,6 +96,18 @@ public class QuizController {
         return ResponseEntity.ok(quizService.startQuiz(quizId, userId));
     }
 
+    @GetMapping("/{quizId}/in-progress")
+    public ResponseEntity<Quiz> getInProgressQuiz(
+            @PathVariable Long quizId,
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        User user = userService.getByUsername(jwt.getSubject());
+        if (quizService.isUserPassingQuiz(quizId, user.getId())) {
+            return ResponseEntity.ok(quizService.getQuizById(quizId));
+        }
+        return ResponseEntity.notFound().build();
+    }
+
     @PostMapping("/{quizId}/finish")
     public ResponseEntity<QuizResult> finishQuiz(
             @PathVariable Long quizId,

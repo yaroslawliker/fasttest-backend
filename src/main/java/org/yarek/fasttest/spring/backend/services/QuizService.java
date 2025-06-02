@@ -74,6 +74,11 @@ public class QuizService {
     }
 
     @Transactional
+    public boolean isUserPassingQuiz(Long quizId, Long userId) {
+        return quizResultRepository.findUnfinishedQuizByUserIdAndQuizId(userId, quizId).isPresent();
+    }
+
+    @Transactional
     public QuizResult finishQuiz(Long quizId, Long userId, float score) {
         QuizResult result = quizResultRepository.findUnfinishedQuizByUserIdAndQuizId(userId, quizId)
                 .orElseThrow(() -> new IllegalStateException("Unfinished quiz not found"));
