@@ -54,7 +54,7 @@ public class LoginController {
 
         User user = userService.getByUsername(request.getUsername());
 
-        logger.debug("Token requested for user '{}'", user.getUsername());
+        logger.info("Token requested for user '{}'", user.getUsername());
 
 
         if (!user.getPassword().equals(request.getPassword())) {
@@ -69,7 +69,7 @@ public class LoginController {
 
         String token = tokenService.generateToken(auth);
 
-        logger.debug("Token generated '{}'", token);
+        logger.info("Token generated '{}'", token);
 
         return token;
     }
