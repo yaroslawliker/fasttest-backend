@@ -6,6 +6,9 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -34,6 +37,8 @@ public class SecurityConfig {
         this.rsaKeyProperties = rsaKeyProperties;
     }
 
+    public static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
+
     @Bean
     public InMemoryUserDetailsManager user() {
         return new InMemoryUserDetailsManager(
@@ -57,7 +62,14 @@ public class SecurityConfig {
                 oauth2ResourceServer(oauth2 -> oauth2.
                         jwt(jwt -> jwt
                             .jwtAuthenticationConverter(jwtAuthenticationConverter())
-                    )
+
+                        )
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            logger.warn("Unauthorized access attempt to: {}", request.getRequestURI());
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("text/plain;charset=UTF-8");
+                            response.getWriter().write("Unauthorized");
+                        })
                 ).
                 sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).
                 httpBasic(withDefaults()).
