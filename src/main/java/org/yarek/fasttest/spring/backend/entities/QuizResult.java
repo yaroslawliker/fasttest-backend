@@ -17,13 +17,13 @@ public class QuizResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column()
     private float score;
 
     @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
 
-    @Column(name = "finish_time", nullable = false)
+    @Column(name = "finish_time")
     private LocalDateTime finishTime;
 
     @Column(name = "user_id", nullable = false)
