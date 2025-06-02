@@ -34,7 +34,7 @@ public class Quiz {
     @Temporal(TemporalType.TIMESTAMP)
     private Date creationDate;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "quiz_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Question> questions = new ArrayList<>();

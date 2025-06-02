@@ -11,6 +11,7 @@ import org.yarek.fasttest.spring.backend.repositories.UserRepository;
 @Service
 public class UserService {
 
+    @Autowired
     private final UserRepository userRepository;
 
     @Autowired

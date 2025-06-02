@@ -27,7 +27,7 @@ public class Question {
     @Column(nullable = false)
     private float score = 1.0f;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "question_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Answer> answers = new ArrayList<>();
