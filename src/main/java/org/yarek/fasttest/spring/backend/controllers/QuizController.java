@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import org.yarek.fasttest.spring.backend.dto.AnsweredQuestionDto;
 import org.yarek.fasttest.spring.backend.dto.quizRequest.CreateQuizDto;
 import org.yarek.fasttest.spring.backend.dto.QuizPreviewDto;
 import org.yarek.fasttest.spring.backend.entities.*;
@@ -13,6 +14,8 @@ import org.yarek.fasttest.spring.backend.services.QuizService;
 import org.yarek.fasttest.spring.backend.services.UserService;
 
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @RestController
@@ -21,6 +24,8 @@ public class QuizController {
 
     private final QuizService quizService;
     private final UserService userService;
+
+    Logger logger = Logger.getLogger(QuizController.class.getName());
 
     public QuizController(QuizService quizService, UserService userService) {
         this.quizService = quizService;
@@ -93,7 +98,13 @@ public class QuizController {
         String username = jwt.getSubject();
         User user = userService.getByUsername(username);
         Long userId = user.getId();
-        return ResponseEntity.ok(quizService.startQuiz(quizId, userId));
+        try {
+            QuizResult quiz = quizService.startQuiz(quizId, userId);
+            return ResponseEntity.ok(quiz);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
     }
 
     @GetMapping("/{quizId}/in-progress")
@@ -101,6 +112,7 @@ public class QuizController {
             @PathVariable Long quizId,
             @AuthenticationPrincipal Jwt jwt
     ) {
+        logger.info("Accessing in progress");
         User user = userService.getByUsername(jwt.getSubject());
         if (quizService.isUserPassingQuiz(quizId, user.getId())) {
             return ResponseEntity.ok(quizService.getQuizById(quizId));
@@ -110,14 +122,31 @@ public class QuizController {
 
     @PostMapping("/{quizId}/finish")
     public ResponseEntity<QuizResult> finishQuiz(
+            @RequestBody List<AnsweredQuestionDto> questions,
             @PathVariable Long quizId,
-            @RequestParam float score,
             @AuthenticationPrincipal Jwt jwt
     ) {
+        logger.info("Quiz finish" + questions.toString());
         String username = jwt.getSubject();
         User user = userService.getByUsername(username);
         Long userId = user.getId();
-        return ResponseEntity.ok(quizService.finishQuiz(quizId, userId, score));
+
+        Quiz quiz = quizService.getQuizById(quizId);
+        QuizBlank quizBlank = new QuizBlank(quiz);
+
+        for (int i = 0; i < questions.size(); i++) {
+            AnsweredQuestionDto answeredQuestionDto = questions.get(i);
+            List<Integer> answers = answeredQuestionDto.getSelectedAnswerIndexes();
+            for (Integer answer : answers) {
+                quizBlank.registerAnswer(i, answer);
+            }
+        }
+
+        float score = quizBlank.getScore();
+
+        QuizResult quizResult = quizService.finishQuiz(quizId, userId, score);
+
+        return ResponseEntity.ok(quizResult);
     }
 
     @GetMapping("/{quizId}/results")
