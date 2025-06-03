@@ -55,6 +55,7 @@ public class QuizController {
                             .map(answerDto -> {
                                 Answer answer = new Answer();
                                 answer.setContent(answerDto.getText());
+                                answer.setCorrect(answerDto.isCorrect());
                                 return answer;
                             })
                             .collect(Collectors.toList());
